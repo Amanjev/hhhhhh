@@ -1,10 +1,9 @@
 package com.example.neonapp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import com.example.neonapp.model.Student;
 import com.example.neonapp.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/students")
@@ -14,13 +13,12 @@ public class StudentController {
     private StudentRepository studentRepository;
 
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        Student savedStudent = studentRepository.save(student);
-        return ResponseEntity.ok(savedStudent);
+    public Student createStudent(@RequestBody Student student) {
+        return studentRepository.save(student);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllStudents() {
-        return ResponseEntity.ok(studentRepository.findAll());
+    public java.util.List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 }
