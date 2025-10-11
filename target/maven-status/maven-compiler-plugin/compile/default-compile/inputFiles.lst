@@ -1,8 +1,8 @@
-C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\model\User.java
+C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\model\Teacher.java
 C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\controller\HomeController.java
 C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\DemoApplication.java
 C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\model\Student.java
-C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\repository\UserRepository.java
-C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\controller\UserController.java
 C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\repository\StudentRepository.java
+C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\repository\TeacherRepository.java
 C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\controller\StudentController.java
+C:\Users\Aman\Downloads\spring-boot-neon-project-full\src\main\java\com\example\neonapp\controller\TeacherController.java
