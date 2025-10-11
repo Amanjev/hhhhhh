@@ -1,11 +1,11 @@
-package com.example.demo.controller;
+package com.example.neonapp.controller;
 
-import com.example.demo.model.Teacher;
-import com.example.demo.repository.TeacherRepository;
+import com.example.neonapp.model.Teacher;
+import com.example.neonapp.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/teachers")

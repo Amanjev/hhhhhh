@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.neonapp.repository;
 
-import com.example.demo.model.Teacher;
+import com.example.neonapp.model.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
