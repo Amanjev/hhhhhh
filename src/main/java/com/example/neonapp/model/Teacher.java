@@ -1,4 +1,4 @@
-package com.example.neonapp.model;
+package com.example.demo.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,25 +11,10 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String facultyId;
     private String email;
 
-    public Teacher() {}
-
-    public Teacher(String name, String facultyId, String email) {
-        this.name = name;
-        this.facultyId = facultyId;
-        this.email = email;
-    }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getFacultyId() { return facultyId; }
-    public String getEmail() { return email; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setFacultyId(String facultyId) { this.facultyId = facultyId; }
-    public void setEmail(String email) { this.email = email; }
+    // getters and setters
 }

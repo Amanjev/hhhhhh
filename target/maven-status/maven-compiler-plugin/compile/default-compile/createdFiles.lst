@@ -1,7 +1,8 @@
 com\example\neonapp\DemoApplication.class
 com\example\neonapp\model\Student.class
-com\example\neonapp\repository\TeacherRepository.class
-com\example\neonapp\model\Teacher.class
 com\example\neonapp\repository\StudentRepository.class
+com\example\demo\model\Teacher.class
+com\example\demo\controller\TeacherController.class
 com\example\neonapp\controller\HomeController.class
 com\example\neonapp\controller\StudentController.class
+com\example\demo\repository\TeacherRepository.class
