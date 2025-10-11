@@ -1,0 +1,8 @@
+com\example\neonapp\controller\UserController.class
+com\example\neonapp\DemoApplication.class
+com\example\neonapp\model\Student.class
+com\example\neonapp\repository\StudentRepository.class
+com\example\neonapp\controller\HomeController.class
+com\example\neonapp\controller\StudentController.class
+com\example\neonapp\repository\UserRepository.class
+com\example\neonapp\model\User.class
