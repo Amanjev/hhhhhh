@@ -20,14 +20,18 @@ public class Assignment {
 
     private boolean isActive;
 
-    public Assignment() {}
+    public Assignment() {
+        // Automatically set createdAt when new Assignment is created
+        this.createdAt = LocalDateTime.now();
+    }
 
-    public Assignment(String title, String description, String subject, String facultyId, LocalDateTime createdAt, LocalDateTime dueDate, boolean isActive) {
+    public Assignment(String title, String description, String subject, String facultyId,
+                      LocalDateTime dueDate, boolean isActive) {
         this.title = title;
         this.description = description;
         this.subject = subject;
         this.facultyId = facultyId;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now(); // ensure it’s never null
         this.dueDate = dueDate;
         this.isActive = isActive;
     }
