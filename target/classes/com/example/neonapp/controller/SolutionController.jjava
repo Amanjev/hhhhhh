@@ -1,7 +1,7 @@
 package com.example.neonapp.controller;
 
-import com.example.neonapp.model.Assignment;
-import com.example.neonapp.repository.AssignmentRepository;
+import com.example.neonapp.model.Solution;
+import com.example.neonapp.repository.SolutionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,51 +13,44 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/assignments")
-public class AssignmentController {
+@RequestMapping("/api/solutions")
+public class SolutionController {
 
     @Autowired
-    private AssignmentRepository assignmentRepository;
+    private SolutionRepository solutionRepository;
 
-    // ✅ Use /tmp directory (works on Render)
-    private static final String UPLOAD_DIR = "/tmp/uploads/";
+    private static final String UPLOAD_DIR = "uploads/";
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadAssignment(
+    public ResponseEntity<String> uploadSolution(
             @RequestParam("studentName") String studentName,
-            @RequestParam("assignmentNo") String assignmentNo,
+            @RequestParam("solutionNo") String solutionNo,
             @RequestParam("subjectName") String subjectName,
             @RequestParam("file") MultipartFile file) {
 
         try {
-            // ✅ Validate file type
-            if (file.getContentType() == null || !file.getContentType().equals("application/pdf")) {
+            if (!file.getContentType().equals("application/pdf")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Only PDF files are allowed.");
             }
 
-            // ✅ Validate file size (max 5MB)
             if (file.getSize() > 5 * 1024 * 1024) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("File size exceeds 5MB limit (5MB max).");
+                        .body("File size exceeds 5MB limit.");
             }
 
-            // ✅ Create uploads directory if not exists
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
-            // ✅ Save file to /tmp/uploads/
             String filePath = UPLOAD_DIR + file.getOriginalFilename();
             file.transferTo(new File(filePath));
 
-            // ✅ Save assignment record in the database
-            Assignment assignment = new Assignment(studentName, assignmentNo, subjectName, file.getOriginalFilename());
-            assignmentRepository.save(assignment);
+            Solution solution = new Solution(studentName, solutionNo, subjectName, file.getOriginalFilename());
+            solutionRepository.save(solution);
 
-            return ResponseEntity.ok("Assignment uploaded successfully and saved to: " + filePath);
-
+            return ResponseEntity.ok("Solution uploaded successfully!");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error uploading file: " + e.getMessage());
@@ -65,7 +58,7 @@ public class AssignmentController {
     }
 
     @GetMapping
-    public List<Assignment> getAllAssignments() {
-        return assignmentRepository.findAll();
+    public List<Solution> getAllSolutions() {
+        return solutionRepository.findAll();
     }
 }
