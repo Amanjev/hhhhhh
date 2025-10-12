@@ -24,7 +24,7 @@ public class AssignmentController {
             Assignment savedAssignment = assignmentRepository.save(assignment);
             return ResponseEntity.ok(savedAssignment);
         } catch (Exception e) {
-            e.printStackTrace(); // Logs to Render console
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body("❌ Error creating assignment: " + e.getMessage());
         }
@@ -48,8 +48,8 @@ public class AssignmentController {
     public ResponseEntity<?> getAssignmentById(@PathVariable Long id) {
         try {
             return assignmentRepository.findById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(404).body("Assignment not found"));
+                    .<ResponseEntity<?>>map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).body("❌ Assignment not found"));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
@@ -59,7 +59,7 @@ public class AssignmentController {
 
     // ✅ Delete assignment by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAssignment(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAssignment(@PathVariable Long id) {
         try {
             if (assignmentRepository.existsById(id)) {
                 assignmentRepository.deleteById(id);
