@@ -19,7 +19,8 @@ public class SolutionController {
     @Autowired
     private SolutionRepository solutionRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
+    // Use /tmp folder for Render’s writable temporary directory
+    private static final String UPLOAD_DIR = "/tmp/uploads/";
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadSolution(
@@ -29,28 +30,33 @@ public class SolutionController {
             @RequestParam("file") MultipartFile file) {
 
         try {
+            // Validate file type (must be PDF)
             if (!file.getContentType().equals("application/pdf")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Only PDF files are allowed.");
             }
 
+            // Validate file size (max 5MB)
             if (file.getSize() > 5 * 1024 * 1024) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("File size exceeds 5MB limit.");
             }
 
+            // Ensure upload directory exists
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
+            // Save file to /tmp/uploads/
             String filePath = UPLOAD_DIR + file.getOriginalFilename();
             file.transferTo(new File(filePath));
 
+            // Save file metadata to the database
             Solution solution = new Solution(studentName, solutionNo, subjectName, file.getOriginalFilename());
             solutionRepository.save(solution);
 
-            return ResponseEntity.ok("Solution uploaded successfully!");
+            return ResponseEntity.ok("✅ Solution uploaded successfully and saved at: " + filePath);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error uploading file: " + e.getMessage());
