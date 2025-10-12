@@ -18,33 +18,59 @@ public class AssignmentController {
 
     // ✅ Create new assignment
     @PostMapping("/create")
-    public ResponseEntity<Assignment> createAssignment(@RequestBody Assignment assignment) {
-        assignment.setCreatedAt(LocalDateTime.now());
-        Assignment savedAssignment = assignmentRepository.save(assignment);
-        return ResponseEntity.ok(savedAssignment);
+    public ResponseEntity<?> createAssignment(@RequestBody Assignment assignment) {
+        try {
+            assignment.setCreatedAt(LocalDateTime.now());
+            Assignment savedAssignment = assignmentRepository.save(assignment);
+            return ResponseEntity.ok(savedAssignment);
+        } catch (Exception e) {
+            e.printStackTrace(); // Logs to Render console
+            return ResponseEntity.internalServerError()
+                    .body("❌ Error creating assignment: " + e.getMessage());
+        }
     }
 
     // ✅ Get all assignments
     @GetMapping
-    public List<Assignment> getAllAssignments() {
-        return assignmentRepository.findAll();
+    public ResponseEntity<?> getAllAssignments() {
+        try {
+            List<Assignment> assignments = assignmentRepository.findAll();
+            return ResponseEntity.ok(assignments);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("❌ Error fetching assignments: " + e.getMessage());
+        }
     }
 
-    // ✅ Get by ID
+    // ✅ Get assignment by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Assignment> getAssignmentById(@PathVariable Long id) {
-        return assignmentRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getAssignmentById(@PathVariable Long id) {
+        try {
+            return assignmentRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).body("Assignment not found"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("❌ Error fetching assignment: " + e.getMessage());
+        }
     }
 
-    // ✅ Delete assignment
+    // ✅ Delete assignment by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAssignment(@PathVariable Long id) {
-        if (assignmentRepository.existsById(id)) {
-            assignmentRepository.deleteById(id);
-            return ResponseEntity.ok("Assignment deleted successfully");
+        try {
+            if (assignmentRepository.existsById(id)) {
+                assignmentRepository.deleteById(id);
+                return ResponseEntity.ok("✅ Assignment deleted successfully");
+            } else {
+                return ResponseEntity.status(404).body("❌ Assignment not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("❌ Error deleting assignment: " + e.getMessage());
         }
-        return ResponseEntity.status(404).body("Assignment not found");
     }
 }
