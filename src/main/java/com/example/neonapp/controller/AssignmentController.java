@@ -16,10 +16,11 @@ public class AssignmentController {
     @Autowired
     private AssignmentRepository assignmentRepository;
 
-    // ✅ Create new assignment
+    // Create new assignment
     @PostMapping("/create")
     public ResponseEntity<?> createAssignment(@RequestBody Assignment assignment) {
         try {
+            // set creation time
             assignment.setCreatedAt(LocalDateTime.now());
             Assignment savedAssignment = assignmentRepository.save(assignment);
             return ResponseEntity.ok(savedAssignment);
@@ -30,7 +31,7 @@ public class AssignmentController {
         }
     }
 
-    // ✅ Get all assignments
+    // Get all assignments
     @GetMapping
     public ResponseEntity<?> getAllAssignments() {
         try {
@@ -43,13 +44,16 @@ public class AssignmentController {
         }
     }
 
-    // ✅ Get assignment by ID
+    // Get assignment by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getAssignmentById(@PathVariable Long id) {
         try {
-            return assignmentRepository.findById(id)
-                    .<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(404).body("❌ Assignment not found"));
+            var maybe = assignmentRepository.findById(id);
+            if (maybe.isPresent()) {
+                return ResponseEntity.ok(maybe.get());
+            } else {
+                return ResponseEntity.status(404).body("❌ Assignment not found");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
@@ -57,7 +61,7 @@ public class AssignmentController {
         }
     }
 
-    // ✅ Delete assignment by ID
+    // Delete assignment by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAssignment(@PathVariable Long id) {
         try {
@@ -71,6 +75,47 @@ public class AssignmentController {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body("❌ Error deleting assignment: " + e.getMessage());
+        }
+    }
+
+    // Update an existing assignment by ID (PUT - expects full-ish object; null fields won't overwrite)
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAssignment(@PathVariable Long id, @RequestBody Assignment updatedAssignment) {
+        try {
+            var maybe = assignmentRepository.findById(id);
+            if (maybe.isPresent()) {
+                Assignment existing = maybe.get();
+
+                // Update only non-null string/date fields
+                if (updatedAssignment.getTitle() != null) {
+                    existing.setTitle(updatedAssignment.getTitle());
+                }
+                if (updatedAssignment.getDescription() != null) {
+                    existing.setDescription(updatedAssignment.getDescription());
+                }
+                if (updatedAssignment.getSubject() != null) {
+                    existing.setSubject(updatedAssignment.getSubject());
+                }
+                if (updatedAssignment.getFacultyId() != null) {
+                    existing.setFacultyId(updatedAssignment.getFacultyId());
+                }
+                if (updatedAssignment.getDueDate() != null) {
+                    existing.setDueDate(updatedAssignment.getDueDate());
+                }
+
+                // boolean: this will set to false if omitted in JSON (primitive boolean default).
+                // If you want "only set when provided", use PATCH or change to Boolean in a DTO.
+                existing.setActive(updatedAssignment.isActive());
+
+                Assignment saved = assignmentRepository.save(existing);
+                return ResponseEntity.ok(saved);
+            } else {
+                return ResponseEntity.status(404).body("❌ Assignment not found with ID: " + id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("❌ Error updating assignment: " + e.getMessage());
         }
     }
 }
