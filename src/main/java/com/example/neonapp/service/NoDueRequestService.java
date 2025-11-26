@@ -46,6 +46,11 @@ public class NoDueRequestService {
         return repo.findByEnrollmentNo(enrollmentNo);
     }
 
+    public List<NoDueRequest> getBySubject(String subjectName) {
+    return repo.findBySubjectName(subjectName);
+    }
+
+
     @Transactional
     public Optional<NoDueRequest> updateStatus(Long id, String status) {
         return repo.findById(id).map(req -> {

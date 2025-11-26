@@ -12,4 +12,6 @@ public interface NoDueRequestRepository extends JpaRepository<NoDueRequest, Long
 
     // find single pending request by enrollment & subject
     Optional<NoDueRequest> findFirstByEnrollmentNoAndSubjectNameAndStatus(String enrollmentNo, String subjectName, String status);
+    List<NoDueRequest> findBySubjectName(String subjectName);
+
 }

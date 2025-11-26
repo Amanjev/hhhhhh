@@ -40,6 +40,12 @@ public class NoDueRequestController {
         return ResponseEntity.ok(service.getByEnrollment(enrollment));
     }
 
+    @GetMapping("/by-subject")
+public ResponseEntity<List<NoDueRequest>> getDueRequestBySubject(@RequestParam String subject) {
+    return ResponseEntity.ok(service.getBySubject(subject));
+    }
+
+
     // Get single
     @GetMapping("/{id}")
     public ResponseEntity<NoDueRequest> getById(@PathVariable Long id) {
