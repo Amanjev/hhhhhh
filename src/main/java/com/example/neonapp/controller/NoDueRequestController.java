@@ -1,5 +1,6 @@
 package com.example.neonapp.controller;
 
+import com.example.neonapp.dto.ApproveNoDueRequestDto;
 import com.example.neonapp.dto.CreateNoDueRequestDto;
 import com.example.neonapp.model.NoDueRequest;
 import com.example.neonapp.service.NoDueRequestService;
@@ -19,34 +20,52 @@ public class NoDueRequestController {
         this.service = service;
     }
 
+    // Create
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateNoDueRequestDto dto) {
+    public ResponseEntity<NoDueRequest> create(@RequestBody CreateNoDueRequestDto dto) {
         NoDueRequest saved = service.createRequest(dto);
-        return ResponseEntity.created(URI.create("/api/no-due-requests/" + saved.getId()))
-                .body(saved);
+        return ResponseEntity.created(URI.create("/api/no-due-requests/" + saved.getId())).body(saved);
     }
 
+    // List all
     @GetMapping
     public ResponseEntity<List<NoDueRequest>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    // Get by enrollment
     @GetMapping("/by-enrollment")
-    public ResponseEntity<List<NoDueRequest>> getByEnrollment(@RequestParam String enrollment) {
+    public ResponseEntity<List<NoDueRequest>> getByEnrollment(@RequestParam("enrollment") String enrollment) {
         return ResponseEntity.ok(service.getByEnrollment(enrollment));
     }
 
-    @PatchMapping("/{id}/approve")
-    public ResponseEntity<?> approve(@PathVariable Long id) {
-        return service.updateStatus(id, "APPROVED")
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // Get single
+    @GetMapping("/{id}")
+    public ResponseEntity<NoDueRequest> getById(@PathVariable Long id) {
+        return service.getById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Approve by id (simple endpoint)
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<NoDueRequest> approveById(@PathVariable Long id) {
+        NoDueRequest updated = service.approveById(id, null);
+        return ResponseEntity.ok(updated);
+    }
+
+    // Reject by id (simple endpoint)
     @PatchMapping("/{id}/reject")
-    public ResponseEntity<?> reject(@PathVariable Long id) {
-        return service.updateStatus(id, "REJECTED")
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<NoDueRequest> rejectById(@PathVariable Long id) {
+        NoDueRequest updated = service.updateStatus(id, "REJECTED").orElseThrow(() -> 
+            new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Not found"));
+        return ResponseEntity.ok(updated);
+    }
+
+    // -----------------------------
+    // NEW: Approve endpoint (by id OR by enrollment + subject)
+    // -----------------------------
+    @PostMapping("/approve")
+    public ResponseEntity<NoDueRequest> approveNoDueRequest(@RequestBody ApproveNoDueRequestDto dto) {
+        NoDueRequest updated = service.approve(dto);
+        return ResponseEntity.ok(updated);
     }
 }
