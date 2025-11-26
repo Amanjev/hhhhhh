@@ -2,6 +2,7 @@ package com.example.neonapp.service;
 
 import com.example.neonapp.dto.ApproveNoDueRequestDto;
 import com.example.neonapp.dto.CreateNoDueRequestDto;
+import com.example.neonapp.dto.DeclineNoDueRequestDto;
 import com.example.neonapp.model.NoDueRequest;
 import com.example.neonapp.repository.NoDueRequestRepository;
 import org.springframework.http.HttpStatus;
@@ -57,14 +58,11 @@ public class NoDueRequestService {
     // Approve-related APIs
     // --------------------
 
-    /**
-     * Approve by id. Throws 404 if not found.
-     */
     @Transactional
     public NoDueRequest approveById(Long id, String approverName) {
         return repo.findById(id).map(req -> {
             req.setStatus("APPROVED");
-            // If you later add approver/audit fields, set them here:
+            // If you add approver metadata to the entity, set it here:
             // req.setApproverName(approverName);
             // req.setApprovedAt(LocalDateTime.now());
             return repo.save(req);
@@ -72,10 +70,6 @@ public class NoDueRequestService {
                 "NoDueRequest not found with id: " + id));
     }
 
-    /**
-     * Approve the first pending ("NEW") request matching enrollmentNo + subjectName.
-     * Throws 404 if none found.
-     */
     @Transactional
     public NoDueRequest approveByEnrollmentAndSubject(String enrollmentNo, String subjectName, String approverName) {
         Optional<NoDueRequest> opt = repo.findFirstByEnrollmentNoAndSubjectNameAndStatus(enrollmentNo, subjectName, "NEW");
@@ -87,10 +81,6 @@ public class NoDueRequestService {
         return repo.save(req);
     }
 
-    /**
-     * Convenience method: tries id first, otherwise tries enrollmentNo+subjectName.
-     * Throws 400 if input is insufficient.
-     */
     @Transactional
     public NoDueRequest approve(ApproveNoDueRequestDto dto) {
         if (dto == null) {
@@ -106,5 +96,33 @@ public class NoDueRequestService {
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide id or (enrollmentNo and subjectName)");
+    }
+
+    // --------------------
+    // Decline-related API
+    // --------------------
+
+    /**
+     * Decline a NoDueRequest by id, set status to DECLINED.
+     * If your NoDueRequest entity has fields to store reason/decliner/declinedAt,
+     * uncomment the lines below and add the fields to the entity.
+     */
+    @Transactional
+    public NoDueRequest decline(DeclineNoDueRequestDto dto) {
+        if (dto == null || dto.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required to decline a NoDueRequest");
+        }
+
+        return repo.findById(dto.getId()).map(req -> {
+            req.setStatus("DECLINED");
+
+            // If you add 'reason' and 'declinerName' fields to the entity, uncomment these:
+            // req.setReason(dto.getReason());
+            // req.setDeclinerName(dto.getDeclinerName());
+            // req.setDeclinedAt(LocalDateTime.now());
+
+            return repo.save(req);
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "NoDueRequest not found with id: " + dto.getId()));
     }
 }

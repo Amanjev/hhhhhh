@@ -2,6 +2,7 @@ package com.example.neonapp.controller;
 
 import com.example.neonapp.dto.ApproveNoDueRequestDto;
 import com.example.neonapp.dto.CreateNoDueRequestDto;
+import com.example.neonapp.dto.DeclineNoDueRequestDto;
 import com.example.neonapp.model.NoDueRequest;
 import com.example.neonapp.service.NoDueRequestService;
 import org.springframework.http.ResponseEntity;
@@ -45,27 +46,34 @@ public class NoDueRequestController {
         return service.getById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Approve by id (simple endpoint)
+    // Approve by id
     @PatchMapping("/{id}/approve")
     public ResponseEntity<NoDueRequest> approveById(@PathVariable Long id) {
         NoDueRequest updated = service.approveById(id, null);
         return ResponseEntity.ok(updated);
     }
 
-    // Reject by id (simple endpoint)
+    // Reject by id
     @PatchMapping("/{id}/reject")
     public ResponseEntity<NoDueRequest> rejectById(@PathVariable Long id) {
-        NoDueRequest updated = service.updateStatus(id, "REJECTED").orElseThrow(() -> 
-            new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Not found"));
+        NoDueRequest updated = service.updateStatus(id, "REJECTED").orElseThrow(() ->
+                new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Not found"));
+        return ResponseEntity.ok(updated);
+    }
+
+    // Approve (by id OR enrollment+subject)
+    @PostMapping("/approve")
+    public ResponseEntity<NoDueRequest> approveNoDueRequest(@RequestBody ApproveNoDueRequestDto dto) {
+        NoDueRequest updated = service.approve(dto);
         return ResponseEntity.ok(updated);
     }
 
     // -----------------------------
-    // NEW: Approve endpoint (by id OR by enrollment + subject)
+    // NEW: Decline endpoint
     // -----------------------------
-    @PostMapping("/approve")
-    public ResponseEntity<NoDueRequest> approveNoDueRequest(@RequestBody ApproveNoDueRequestDto dto) {
-        NoDueRequest updated = service.approve(dto);
+    @PostMapping("/decline")
+    public ResponseEntity<NoDueRequest> declineNoDueRequest(@RequestBody DeclineNoDueRequestDto dto) {
+        NoDueRequest updated = service.decline(dto);
         return ResponseEntity.ok(updated);
     }
 }

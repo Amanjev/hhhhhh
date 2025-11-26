@@ -11,24 +11,24 @@ public class NoDueRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "student_name", nullable = false)
     private String studentName;
 
-    @Column(nullable = false)
+    @Column(name = "enrollment_no", nullable = false)
     private String enrollmentNo;
 
-    @Column(nullable = false)
+    @Column(name = "subject_name", nullable = false)
     private String subjectName;
 
     @Column(nullable = false)
-    private String status;
+    private String status; // "NEW", "APPROVED", "REJECTED"
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    public NoDueRequest() {}
+    public NoDueRequest() { }
 
-    // getters & setters
+    // --- getters & setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
