@@ -42,6 +42,16 @@ public class NoDueRequestService {
         return repo.findById(id);
     }
 
+    /**
+     * NEW: return the status string for a given NoDueRequest id (throws 404 if missing)
+     */
+    public String getStatusById(Long id) {
+        return repo.findById(id)
+                .map(NoDueRequest::getStatus)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "NoDueRequest not found with id: " + id));
+    }
+
     public List<NoDueRequest> getByEnrollment(String enrollmentNo) {
         return repo.findByEnrollmentNo(enrollmentNo);
     }
@@ -101,7 +111,7 @@ public class NoDueRequestService {
         return repo.findById(dto.getId()).map(req -> {
             req.setStatus("DECLINED");
 
-            // persist reason/decliner/time (entity holds Instant)
+            // persist reason/decliner/time (entity must hold these fields of appropriate types)
             req.setReason(dto.getReason());
             req.setDeclinerName(dto.getDeclinerName());
             req.setDeclinedAt(Instant.now());
