@@ -9,6 +9,8 @@ com\example\neonapp\controller\NoDueRequestController.class
 com\example\neonapp\repository\SolutionRepository.class
 com\example\neonapp\controller\SolutionController.class
 com\example\neonapp\DemoApplication.class
+com\example\neonapp\dto\ApproveNoDueRequestDto.class
+com\example\neonapp\dto\DeclineNoDueRequestDto.class
 com\example\neonapp\repository\StudentRepository.class
 com\example\neonapp\controller\AssignmentController.class
 com\example\neonapp\controller\HomeController.class

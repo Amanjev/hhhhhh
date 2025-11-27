@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public class NoDueRequestService {
         request.setEnrollmentNo(dto.getEnrollmentNo());
         request.setSubjectName(dto.getSubjectName());
         request.setStatus("NEW");
-        request.setCreatedAt(LocalDateTime.now());
+        request.setCreatedAt(Instant.now());          // UTC instant
         return repo.save(request);
     }
 
@@ -47,9 +47,8 @@ public class NoDueRequestService {
     }
 
     public List<NoDueRequest> getBySubject(String subjectName) {
-    return repo.findBySubjectName(subjectName);
+        return repo.findBySubjectName(subjectName);
     }
-
 
     @Transactional
     public Optional<NoDueRequest> updateStatus(Long id, String status) {
@@ -59,17 +58,11 @@ public class NoDueRequestService {
         });
     }
 
-    // --------------------
-    // Approve-related APIs
-    // --------------------
-
+    // Approve-related
     @Transactional
     public NoDueRequest approveById(Long id, String approverName) {
         return repo.findById(id).map(req -> {
             req.setStatus("APPROVED");
-            // If you add approver metadata to the entity, set it here:
-            // req.setApproverName(approverName);
-            // req.setApprovedAt(LocalDateTime.now());
             return repo.save(req);
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "NoDueRequest not found with id: " + id));
@@ -81,8 +74,6 @@ public class NoDueRequestService {
         NoDueRequest req = opt.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "No pending NoDueRequest found for enrollment=" + enrollmentNo + " subject=" + subjectName));
         req.setStatus("APPROVED");
-        // req.setApproverName(approverName);
-        // req.setApprovedAt(LocalDateTime.now());
         return repo.save(req);
     }
 
@@ -91,27 +82,16 @@ public class NoDueRequestService {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required");
         }
-
         if (dto.getId() != null) {
             return approveById(dto.getId(), dto.getApproverName());
         }
-
         if (dto.getEnrollmentNo() != null && dto.getSubjectName() != null) {
             return approveByEnrollmentAndSubject(dto.getEnrollmentNo(), dto.getSubjectName(), dto.getApproverName());
         }
-
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide id or (enrollmentNo and subjectName)");
     }
 
-    // --------------------
-    // Decline-related API
-    // --------------------
-
-    /**
-     * Decline a NoDueRequest by id, set status to DECLINED.
-     * If your NoDueRequest entity has fields to store reason/decliner/declinedAt,
-     * uncomment the lines below and add the fields to the entity.
-     */
+    // Decline-related
     @Transactional
     public NoDueRequest decline(DeclineNoDueRequestDto dto) {
         if (dto == null || dto.getId() == null) {
@@ -121,10 +101,10 @@ public class NoDueRequestService {
         return repo.findById(dto.getId()).map(req -> {
             req.setStatus("DECLINED");
 
-            // If you add 'reason' and 'declinerName' fields to the entity, uncomment these:
-            // req.setReason(dto.getReason());
-            // req.setDeclinerName(dto.getDeclinerName());
-            // req.setDeclinedAt(LocalDateTime.now());
+            // persist reason/decliner/time (entity holds Instant)
+            req.setReason(dto.getReason());
+            req.setDeclinerName(dto.getDeclinerName());
+            req.setDeclinedAt(Instant.now());
 
             return repo.save(req);
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,

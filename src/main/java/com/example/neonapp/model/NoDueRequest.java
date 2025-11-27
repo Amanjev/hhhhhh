@@ -1,32 +1,35 @@
 package com.example.neonapp.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
-@Table(name = "no_due_requests")
+@Table(name = "no_due_request")
 public class NoDueRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "student_name", nullable = false)
     private String studentName;
-
-    @Column(name = "enrollment_no", nullable = false)
     private String enrollmentNo;
-
-    @Column(name = "subject_name", nullable = false)
     private String subjectName;
+    private String status;
 
-    @Column(nullable = false)
-    private String status; // "NEW", "APPROVED", "REJECTED"
+    // store timestamps as UTC Instants
+    private Instant createdAt;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    // optional decline fields (persisted)
+    @Column(name = "reason")
+    private String reason;
 
-    public NoDueRequest() { }
+    @Column(name = "decliner_name")
+    private String declinerName;
+
+    @Column(name = "declined_at")
+    private Instant declinedAt;
+
+    public NoDueRequest() {}
 
     // --- getters & setters ---
     public Long getId() { return id; }
@@ -44,6 +47,15 @@ public class NoDueRequest {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+
+    public String getDeclinerName() { return declinerName; }
+    public void setDeclinerName(String declinerName) { this.declinerName = declinerName; }
+
+    public Instant getDeclinedAt() { return declinedAt; }
+    public void setDeclinedAt(Instant declinedAt) { this.declinedAt = declinedAt; }
 }
